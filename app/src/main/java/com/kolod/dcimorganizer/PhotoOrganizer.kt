@@ -13,6 +13,7 @@ import java.util.*
 class PhotoOrganizer(private val context: Context) {
 
     companion object {
+        // Used by the file-system path (API < 30) to filter files worth organizing
         private val SUPPORTED_EXTENSIONS = setOf("jpg", "jpeg", "png", "gif", "bmp", "webp", "heic", "heif", "mp4", "mov", "avi", "3gp")
         private val EXIF_DATE_FORMAT = SimpleDateFormat("yyyy:MM:dd HH:mm:ss", Locale.US)
         // Matches a folder name that is a 4-digit year (already organized top-level folder)
@@ -35,7 +36,7 @@ class PhotoOrganizer(private val context: Context) {
             MediaStore.Files.FileColumns.DATE_TAKEN,
             MediaStore.Files.FileColumns.DATE_MODIFIED,
             MediaStore.Files.FileColumns.DISPLAY_NAME,
-            MediaStore.Files.FileColumns.MIME_TYPE,
+            MediaStore.Files.FileColumns.MIME_TYPE
         )
         val selection = "${MediaStore.Files.FileColumns.RELATIVE_PATH} LIKE ?"
         val selectionArgs = arrayOf("DCIM/%")
