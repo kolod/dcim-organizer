@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">DCIM Organizer</string>
+    <string name="organize">Organize</string>
+    <string name="permission_required">Storage permission is required to organize photos.</string>
+    <string name="organizing">Organizing photos…</string>
+    <string name="done_format">Done! Organized %d photo(s).</string>
+    <string name="already_organized">Photos are already organized.</string>
+    <string name="error_occurred">An error occurred during organization.</string>
+    <string name="manage_storage_required">Please grant \"All files access\" in Settings to organize photos on Android 11+.</string>
+    <string name="open_settings">Open Settings</string>
+    <string name="cancel">Cancel</string>
+</resources>
