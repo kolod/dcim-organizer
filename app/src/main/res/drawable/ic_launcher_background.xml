@@ -6,6 +6,6 @@
     android:viewportHeight="108">
     <rect
         android:fillColor="#FF6200EE"
-        android:width="108"
-        android:height="108"/>
+        android:width="108dp"
+        android:height="108dp"/>
 </vector>
