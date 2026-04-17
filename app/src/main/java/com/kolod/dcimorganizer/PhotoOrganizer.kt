@@ -15,7 +15,8 @@ class PhotoOrganizer(private val context: Context) {
     companion object {
         private val SUPPORTED_EXTENSIONS = setOf("jpg", "jpeg", "png", "gif", "bmp", "webp", "heic", "heif", "mp4", "mov", "avi", "3gp")
         private val EXIF_DATE_FORMAT = SimpleDateFormat("yyyy:MM:dd HH:mm:ss", Locale.US)
-        private val YEAR_MONTH_FOLDER_PATTERN = Regex("""\d{4}/\d{2}""")
+        // Matches a folder name that is a 4-digit year (already organized top-level folder)
+        private val YEAR_FOLDER_PATTERN = Regex("""\d{4}""")
     }
 
     fun organize(): Int {
@@ -121,9 +122,8 @@ class PhotoOrganizer(private val context: Context) {
         val files = dcimDir.listFiles() ?: return 0
         for (file in files) {
             if (file.isDirectory) {
-                // If it's a year/month folder already, skip
-                // But recurse into other subdirs like Camera
-                if (!YEAR_MONTH_FOLDER_PATTERN.matches(file.name)) {
+                // Skip year-named folders (e.g., "2024") — files inside are already organized
+                if (!YEAR_FOLDER_PATTERN.matches(file.name)) {
                     count += organizeFilesInDir(file, dcimDir)
                 }
             } else {
@@ -159,7 +159,7 @@ class PhotoOrganizer(private val context: Context) {
         if (!targetDir.exists()) targetDir.mkdirs()
 
         val targetFile = File(targetDir, file.name)
-        if (targetFile == file) return false  // Already in the right place
+        if (targetFile.absolutePath == file.absolutePath) return false  // Already in the right place
 
         // If target already exists, skip to avoid overwrite
         if (targetFile.exists()) return false

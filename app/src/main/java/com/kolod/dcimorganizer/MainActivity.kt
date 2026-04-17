@@ -59,6 +59,14 @@ class MainActivity : AppCompatActivity() {
 
     private fun checkPermissionsAndOrganize() {
         when {
+            // TIRAMISU (API 33) must be checked before R (API 30) since 33 > 30
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> {
+                if (Environment.isExternalStorageManager()) {
+                    startOrganizing()
+                } else {
+                    showManageStorageDialog()
+                }
+            }
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> {
                 if (Environment.isExternalStorageManager()) {
                     startOrganizing()
@@ -66,31 +74,8 @@ class MainActivity : AppCompatActivity() {
                     showManageStorageDialog()
                 }
             }
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> {
-                requestPermission(Manifest.permission.READ_MEDIA_IMAGES)
-            }
             else -> {
                 requestStoragePermissions()
-            }
-        }
-    }
-
-    private fun requestPermission(permission: String) {
-        when {
-            ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED -> {
-                startOrganizing()
-            }
-            shouldShowRequestPermissionRationale(permission) -> {
-                AlertDialog.Builder(this)
-                    .setMessage(R.string.permission_required)
-                    .setPositiveButton(android.R.string.ok) { _, _ ->
-                        requestPermissionsLauncher.launch(arrayOf(permission))
-                    }
-                    .setNegativeButton(android.R.string.cancel, null)
-                    .show()
-            }
-            else -> {
-                requestPermissionsLauncher.launch(arrayOf(permission))
             }
         }
     }
