@@ -59,14 +59,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun checkPermissionsAndOrganize() {
         when {
-            // TIRAMISU (API 33) must be checked before R (API 30) since 33 > 30
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> {
-                if (Environment.isExternalStorageManager()) {
-                    startOrganizing()
-                } else {
-                    showManageStorageDialog()
-                }
-            }
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> {
                 if (Environment.isExternalStorageManager()) {
                     startOrganizing()
