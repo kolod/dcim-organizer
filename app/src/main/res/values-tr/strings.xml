@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">DCIM Organizer</string>
+    <string name="organize">Düzenle</string>
+    <string name="status_organizing">Düzenleniyor\u2026</string>
+    <string name="status_already_organized">Zaten düzenli</string>
+    <string name="status_permission_required">Fotoğrafları listelemek için okuma izni gerekiyor.</string>
+    <string name="status_error">Hata: %1$s</string>
+    <string name="error_unknown">Bilinmeyen hata</string>
+
+    <plurals name="status_done">
+        <item quantity="one">Bitti: %d dosya taşındı</item>
+        <item quantity="other">Bitti: %d dosya taşındı</item>
+    </plurals>
+
+    <plurals name="status_done_some_skipped">
+        <item quantity="one">Bitti: %d dosya taşındı (bazıları atlandı)</item>
+        <item quantity="other">Bitti: %d dosya taşındı (bazıları atlandı)</item>
+    </plurals>
+</resources>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">DCIM Organizer</string>
+    <string name="organize">Organizar</string>
+    <string name="status_organizing">Organizando\u2026</string>
+    <string name="status_already_organized">Já organizado</string>
+    <string name="status_permission_required">É necessária permissão de leitura para listar as fotos.</string>
+    <string name="status_error">Erro: %1$s</string>
+    <string name="error_unknown">Erro desconhecido</string>
+
+    <plurals name="status_done">
+        <item quantity="one">Concluído: %d arquivo movido</item>
+        <item quantity="other">Concluído: %d arquivos movidos</item>
+    </plurals>
+
+    <plurals name="status_done_some_skipped">
+        <item quantity="one">Concluído: %d arquivo movido (alguns ignorados)</item>
+        <item quantity="other">Concluído: %d arquivos movidos (alguns ignorados)</item>
+    </plurals>
+</resources>
