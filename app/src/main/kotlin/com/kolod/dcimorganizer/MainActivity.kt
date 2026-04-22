@@ -39,6 +39,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -61,6 +62,19 @@ private val BrandAccent = Color(0xFF0D9488)
 // enough that rapid state changes don't look like a flicker.
 private const val STATUS_FADE_MS = 280
 
+// Represents every distinct state the organizer UI can be in.
+// Carrying typed data here lets OrganizeScreen derive all display strings
+// via stringResource / pluralStringResource in the composable body, which
+// is the only place those Compose resource APIs may legally be called.
+private sealed class OrganizerUiState {
+    object Idle : OrganizerUiState()
+    object Organizing : OrganizerUiState()
+    // total  = cumulative files moved; someSkipped = pending-permission URIs remain
+    data class Done(val total: Int, val someSkipped: Boolean = false) : OrganizerUiState()
+    data class Error(val rawMessage: String?) : OrganizerUiState()
+    object PermissionRequired : OrganizerUiState()
+}
+
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -81,30 +95,32 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun OrganizeScreen(modifier: Modifier = Modifier, organizer: PhotoOrganizer) {
-    var isLoading by remember { mutableStateOf(false) }
-    var statusMessage by remember { mutableStateOf("") }
+    // Single source of truth for UI state. Callbacks only write state; they never
+    // touch resources directly, so there are no LocalContextGetResourceValueCall violations.
+    var uiState by remember { mutableStateOf<OrganizerUiState>(OrganizerUiState.Idle) }
     // Running total across multiple passes (initial run + retry after grant dialog).
     var movedSoFar by remember { mutableStateOf(0) }
 
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
 
-    // Pre-resolve the strings that are only known at runtime (plurals with live counts)
-    // through a tiny helper; everything else is passed as-is via Context.
-    fun statusOrganizing() = context.getString(R.string.status_organizing)
-    fun statusAlreadyOrganized() = context.getString(R.string.status_already_organized)
-    fun statusPermissionRequired() = context.getString(R.string.status_permission_required)
-    fun statusError(msg: String?): String =
-        context.getString(
+    // Derive display strings from state here, in composable context, using the
+    // Compose resource APIs (stringResource / pluralStringResource) as lint requires.
+    val statusMessage: String = when (val s = uiState) {
+        is OrganizerUiState.Idle -> ""
+        is OrganizerUiState.Organizing -> stringResource(R.string.status_organizing)
+        is OrganizerUiState.Done -> when {
+            s.someSkipped -> pluralStringResource(R.plurals.status_done_some_skipped, s.total, s.total)
+            s.total == 0  -> stringResource(R.string.status_already_organized)
+            else          -> pluralStringResource(R.plurals.status_done, s.total, s.total)
+        }
+        is OrganizerUiState.Error -> stringResource(
             R.string.status_error,
-            msg ?: context.getString(R.string.error_unknown)
+            s.rawMessage ?: stringResource(R.string.error_unknown)
         )
-    fun statusDone(total: Int): String =
-        context.resources.getQuantityString(R.plurals.status_done, total, total)
-    fun statusDoneSomeSkipped(total: Int): String =
-        context.resources.getQuantityString(R.plurals.status_done_some_skipped, total, total)
-    fun doneOrAlreadyOrganized(total: Int): String =
-        if (total == 0) statusAlreadyOrganized() else statusDone(total)
+        is OrganizerUiState.PermissionRequired -> stringResource(R.string.status_permission_required)
+    }
+    val isLoading = uiState is OrganizerUiState.Organizing
 
     // Launcher for the MediaStore "grant write access" system dialog.
     // On OK, re-run organize; any URIs still failing after that just get reported as skipped.
@@ -112,29 +128,24 @@ fun OrganizeScreen(modifier: Modifier = Modifier, organizer: PhotoOrganizer) {
         contract = ActivityResultContracts.StartIntentSenderForResult()
     ) { result ->
         if (result.resultCode == android.app.Activity.RESULT_OK) {
-            isLoading = true
-            statusMessage = statusOrganizing()
+            uiState = OrganizerUiState.Organizing
             scope.launch {
                 val outcome = withContext(Dispatchers.IO) {
                     runCatching { organizer.organize() }
                 }
                 outcome.onFailure { e ->
-                    isLoading = false
-                    statusMessage = statusError(e.message)
+                    uiState = OrganizerUiState.Error(e.message)
                 }.onSuccess { r ->
                     val total = movedSoFar + r.movedCount
                     movedSoFar = total
-                    isLoading = false
-                    statusMessage = if (r.pendingPermissionUris.isNotEmpty()) {
-                        statusDoneSomeSkipped(total)
-                    } else {
-                        doneOrAlreadyOrganized(total)
-                    }
+                    uiState = OrganizerUiState.Done(
+                        total = total,
+                        someSkipped = r.pendingPermissionUris.isNotEmpty()
+                    )
                 }
             }
         } else {
-            isLoading = false
-            statusMessage = statusDoneSomeSkipped(movedSoFar)
+            uiState = OrganizerUiState.Done(total = movedSoFar, someSkipped = true)
         }
     }
 
@@ -143,20 +154,18 @@ fun OrganizeScreen(modifier: Modifier = Modifier, organizer: PhotoOrganizer) {
         runOrganizer(
             scope, organizer,
             baselineCount = 0,
-            onStart = { isLoading = true; statusMessage = statusOrganizing() },
+            onStart = { uiState = OrganizerUiState.Organizing },
             onDone = { total ->
                 movedSoFar = total
-                isLoading = false
-                statusMessage = doneOrAlreadyOrganized(total)
+                uiState = OrganizerUiState.Done(total = total, someSkipped = false)
             },
             onError = { msg ->
-                isLoading = false
-                statusMessage = statusError(msg)
+                uiState = OrganizerUiState.Error(msg)
             },
             onRequestWrite = { total, uris ->
                 movedSoFar = total
-                // Keep a tentative count visible while the system dialog is in front.
-                statusMessage = statusDone(total)
+                // Keep a tentative "Done: N" visible while the system dialog is in front.
+                uiState = OrganizerUiState.Done(total = total, someSkipped = false)
                 launchWriteRequest(context.contentResolver, uris, writeRequestLauncher)
             }
         )
@@ -169,7 +178,7 @@ fun OrganizeScreen(modifier: Modifier = Modifier, organizer: PhotoOrganizer) {
         if (granted.values.all { it }) {
             startOrganize()
         } else {
-            statusMessage = statusPermissionRequired()
+            uiState = OrganizerUiState.PermissionRequired
         }
     }
 
@@ -312,4 +321,3 @@ fun GreetingPreview() {
         )
     }
 }
-
