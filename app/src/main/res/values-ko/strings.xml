@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">DCIM Organizer</string>
+    <string name="organize">정리</string>
+    <string name="status_organizing">정리 중\u2026</string>
+    <string name="status_already_organized">이미 정리됨</string>
+    <string name="status_permission_required">사진 목록을 표시하려면 읽기 권한이 필요합니다.</string>
+    <string name="status_error">오류: %1$s</string>
+    <string name="error_unknown">알 수 없는 오류</string>
+
+    <!-- Korean does not distinguish grammatical number, so only "other" is provided. -->
+    <plurals name="status_done">
+        <item quantity="other">완료: %d개 파일 이동됨</item>
+    </plurals>
+
+    <plurals name="status_done_some_skipped">
+        <item quantity="other">완료: %d개 파일 이동됨 (일부 건너뜀)</item>
+    </plurals>
+</resources>

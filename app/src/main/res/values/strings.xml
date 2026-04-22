@@ -1,0 +1,31 @@
+<resources>
+    <string name="app_name">DCIM Organizer</string>
+
+    <!-- Primary action on the main screen. -->
+    <string name="organize">Organize</string>
+
+    <!-- Shown on the status line while organize() is running. -->
+    <string name="status_organizing">Organizing\u2026</string>
+
+    <!-- Shown when organize() ran but every file was already in the correct folder. -->
+    <string name="status_already_organized">Already organized</string>
+
+    <!-- Shown when the user denied READ_MEDIA_IMAGES / READ_MEDIA_VIDEO. -->
+    <string name="status_permission_required">Read permission is required to list photos.</string>
+
+    <!-- Shown when organize() threw. %1$s is the exception message (or the unknown-error fallback). -->
+    <string name="status_error">Error: %1$s</string>
+    <string name="error_unknown">Unknown error</string>
+
+    <!-- Terminal status after a successful run. %d is the number of files moved. -->
+    <plurals name="status_done">
+        <item quantity="one">Done: %d file moved</item>
+        <item quantity="other">Done: %d files moved</item>
+    </plurals>
+
+    <!-- Terminal status when some files still couldn't be written after the grant dialog. -->
+    <plurals name="status_done_some_skipped">
+        <item quantity="one">Done: %d file moved (some skipped)</item>
+        <item quantity="other">Done: %d files moved (some skipped)</item>
+    </plurals>
+</resources>

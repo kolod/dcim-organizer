@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">DCIM Organizer</string>
+    <string name="organize">整理</string>
+    <string name="status_organizing">正在整理\u2026</string>
+    <string name="status_already_organized">已整理</string>
+    <string name="status_permission_required">需要读取权限才能列出照片。</string>
+    <string name="status_error">错误：%1$s</string>
+    <string name="error_unknown">未知错误</string>
+
+    <!-- Chinese does not distinguish grammatical number, so only "other" is provided. -->
+    <plurals name="status_done">
+        <item quantity="other">完成：已移动 %d 个文件</item>
+    </plurals>
+
+    <plurals name="status_done_some_skipped">
+        <item quantity="other">完成：已移动 %d 个文件（部分已跳过）</item>
+    </plurals>
+</resources>

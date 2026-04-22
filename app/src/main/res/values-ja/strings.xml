@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">DCIM Organizer</string>
+    <string name="organize">整理する</string>
+    <string name="status_organizing">整理中\u2026</string>
+    <string name="status_already_organized">すでに整理済みです</string>
+    <string name="status_permission_required">写真を一覧表示するには読み取り権限が必要です。</string>
+    <string name="status_error">エラー: %1$s</string>
+    <string name="error_unknown">不明なエラー</string>
+
+    <!-- Japanese does not distinguish grammatical number, so only "other" is provided. -->
+    <plurals name="status_done">
+        <item quantity="other">完了: %d 件のファイルを移動しました</item>
+    </plurals>
+
+    <plurals name="status_done_some_skipped">
+        <item quantity="other">完了: %d 件のファイルを移動しました (一部スキップ)</item>
+    </plurals>
+</resources>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">DCIM Organizer</string>
+    <string name="organize">Упорядкувати</string>
+    <string name="status_organizing">Упорядкування\u2026</string>
+    <string name="status_already_organized">Уже впорядковано</string>
+    <string name="status_permission_required">Щоб переглянути фотографії, потрібен дозвіл на читання.</string>
+    <string name="status_error">Помилка: %1$s</string>
+    <string name="error_unknown">Невідома помилка</string>
+
+    <plurals name="status_done">
+        <item quantity="one">Готово: переміщено %d файл</item>
+        <item quantity="few">Готово: переміщено %d файли</item>
+        <item quantity="many">Готово: переміщено %d файлів</item>
+        <item quantity="other">Готово: переміщено %d файлу</item>
+    </plurals>
+
+    <plurals name="status_done_some_skipped">
+        <item quantity="one">Готово: переміщено %d файл (деякі пропущено)</item>
+        <item quantity="few">Готово: переміщено %d файли (деякі пропущено)</item>
+        <item quantity="many">Готово: переміщено %d файлів (деякі пропущено)</item>
+        <item quantity="other">Готово: переміщено %d файлу (деякі пропущено)</item>
+    </plurals>
+</resources>
